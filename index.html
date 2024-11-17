@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Tracker - ALIF ACADEMY BRANCH-3</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+
+        /* General styling */
+        #studentList .student {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f8f9fa;
+        }
+
+        #studentList .student button {
+            margin-left: 0px;
+        }
+
+        /* Attendance buttons */
+        .attendance-buttons button {
+            margin-right: 10px;
+            background-color: lightgrey;
+            color: black;
+            width: 100%;
+            max-width: 100px;
+        }
+
+        .attendance-buttons button.active {
+            background-color: green;
+            color: white;
+        }
+
+        .attendance-buttons .btn-danger.active {
+            background-color: red;
+        }
+
+        .attendance-buttons .btn-warning.active {
+            background-color: yellow;
+            color: black;
+        }
+
+        /* Review Attendance Section */
+        #reviewStudentList .student {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            font-size: 0.875rem;
+            padding: 0.25em 0.5em;
+            border-radius: 0.25em;
+        }
+
+        .bg-success {
+            background-color: green;
+            color: white;
+        }
+
+        .bg-danger {
+            background-color: red;
+            color: white;
+        }
+
+        .bg-warning {
+            background-color: yellow;
+            color: black;
+        }
+
+        .bg-dark {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        /* Mobile-friendly adjustments */
+        @media (max-width: 768px) {
+    /* Layout for each student */
+    #studentList .student {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;  /* Space between student name and buttons */
+        flex-wrap: nowrap;  /* Prevent wrapping */
+        margin-bottom: 15px;
+        padding: 5px;
+        font-size: 14px;
+        width: 100%;
+    }
+
+    /* First Name: No truncation, but will shrink */
+    #studentList .student .first-name {
+        white-space: nowrap;  /* Prevent wrapping */
+        overflow: hidden;
+        text-overflow: clip;  /* No truncation */
+        flex-shrink: 1;  /* Allow first name to shrink */
+        max-width: 50%;  /* Allow some room for last name and buttons */
+        margin-right: 10px;
+    }
+
+    /* Last Name: Truncates when needed */
+    #studentList .student .last-name {
+        white-space: nowrap;  /* Prevent wrapping */
+        overflow: hidden;
+        text-overflow: ellipsis;  /* Truncate the last name */
+        flex-shrink: 1;  /* Allow last name to shrink */
+        max-width: 50%;  /* Allow last name to shrink, but not to go on next line */
+    }
+
+    /* Buttons container */
+    .attendance-buttons {
+        display: flex;
+        justify-content: flex-start;  /* Align buttons to the left */
+        gap: 5px;  /* Add gap between buttons */
+        flex-wrap: nowrap;  /* Prevent wrapping of buttons */
+        max-width: calc(100% - 100px);  /* Ensuring buttons don't overflow */
+    }
+
+    /* Individual button styles */
+    .attendance-buttons button {
+        padding: 5px 10px;
+        font-size: 12px;
+        white-space: nowrap;  /* Prevent text from wrapping */
+        min-width: 0;  /* Allow button to shrink */
+        flex-grow: 0;  /* Prevent buttons from growing */
+        flex-shrink: 1;  /* Allow buttons to shrink when necessary */
+        overflow: hidden;  /* Hide overflowed text */
+        text-overflow: ellipsis;  /* Truncate button text when necessary */
+        width: auto;  /* Adjust width based on the text size */
+    }
+
+    /* Secondary button styles for responsiveness */
+    .attendance-buttons .btn-secondary {
+        width: auto;
+    }
+}
+
+
+@media (min-width: 769px) {
+    #studentList .student {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        margin-bottom: 15px;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    #studentList .student span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .attendance-buttons {
+        display: flex;
+        justify-content: flex-start; /* Align buttons to the left */
+        gap: 10px; /* 10px gap between buttons */
+        width: auto; /* Ensure buttons take only as much space as needed */
+        flex-wrap: nowrap; /* Prevent wrapping on mobile */
+    }
+
+    .attendance-buttons button {
+        padding: 10px 15px;
+        font-size: 14px;
+        white-space: nowrap;
+        width: auto;
+        min-width: 0;
+        max-width: none;
+    }
+
+    .attendance-buttons .btn-secondary {
+        width: auto;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" onclick="backToHome()">ALIF ACADEMY</a>
+        </div>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="homePage" class="container mt-5">
+        <div class="text-center">
+            <h1>Welcome to Alif Academy - Branch 3</h1>
+            <p>Select a grade to begin attendance tracking.</p>
+        </div>
+        <div class="mb-4">
+            <label for="gradeChoice" class="form-label">Choose Grade:</label>
+            <select id="gradeChoice" class="form-select" onchange="changeGrade()">
+                <option value="" disabled selected>Select Grade</option>
+                <option value="1">Grade 1</option>
+                <option value="2">Grade 2</option>
+                <option value="3">Grade 3</option>
+                <option value="4">Grade 4</option>
+                <option value="5">Grade 5</option>
+                <option value="6">Grade 6</option>
+                <option value="7">Grade 7</option>
+                <option value="8">Grade 8</option>
+                <option value="9">Grade 9</option>
+                <option value="10">Grade 10</option>
+                <option value="11">Grade 11</option>
+                <option value="12">Grade 12</option>
+            </select>
+        </div>
+        <div class="text-center mt-4">
+            <button class="btn btn-info" onclick="showReviewAttendancePage()">Review Attendance</button>
+        </div>
+    </div>
+
+    <!-- Attendance Page -->
+    <div id="attendancePage" class="container mt-5" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 id="gradeHeader"></h2>
+            <button class="btn btn-secondary" onclick="backToHome()">Back</button>
+        </div>
+        <div class="mt-4">
+            <label for="attendanceDate" class="form-label">Attendance Date:</label>
+            <input type="date" id="attendanceDate" class="form-control">
+        </div>
+        <div class="mt-4">
+            <input type="text" id="searchStudent" class="form-control" placeholder="Search student by name" onkeyup="searchStudent()">
+        </div>
+        <div id="studentList" class="mt-4"></div>
+        <div class="mt-4 d-flex gap-3">
+            <button class="btn btn-primary" onclick="saveAttendance()">Save Attendance</button>
+            <button class="btn btn-success" onclick="addStudent()">Add Student</button>
+        </div>
+    </div>
+
+    <!-- Review Attendance Page -->
+    <div id="reviewAttendancePage" class="container mt-5" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 id="reviewHeader">Review Attendance</h2>
+            <button class="btn btn-secondary" onclick="backToHome()">Back</button>
+        </div>
+        <div class="mt-4">
+            <label for="reviewGradeChoice" class="form-label">Choose Grade:</label>
+            <select id="reviewGradeChoice" class="form-select" onchange="loadAttendanceForReview()">
+                <option value="" disabled selected>Select Grade</option>
+                <option value="1">Grade 1</option>
+                <option value="2">Grade 2</option>
+                <option value="3">Grade 3</option>
+                <option value="4">Grade 4</option>
+                <option value="5">Grade 5</option>
+                <option value="6">Grade 6</option>
+                <option value="7">Grade 7</option>
+                <option value="8">Grade 8</option>
+                <option value="9">Grade 9</option>
+                <option value="10">Grade 10</option>
+                <option value="11">Grade 11</option>
+                <option value="12">Grade 12</option>
+            </select>
+        </div>
+        <div class="mt-4">
+            <label for="reviewAttendanceDate" class="form-label">Select Date:</label>
+            <input type="date" id="reviewAttendanceDate" class="form-control" onchange="loadAttendanceForReview()">
+        </div>
+        <div id="reviewStudentList" class="mt-4"></div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script>
+        let currentGrade = null;
+let attendanceData = loadSavedData();
+
+function loadSavedData() {
+    const data = localStorage.getItem('attendanceData');
+    return data ? JSON.parse(data) : {};
+}
+
+function saveToLocalStorage(data) {
+    localStorage.setItem('attendanceData', JSON.stringify(data));
+}
+
+function isWeekend(date) {
+    const day = new Date(date).getDay();
+    return day === 0 || day === 6; // Sunday (0) or Saturday (6)
+}
+
+function changeGrade() {
+    const gradeChoice = document.getElementById('gradeChoice').value;
+    if (!gradeChoice) {
+        alert('Please select a grade.');
+        return;
+    }
+    console.log(`Grade selected: ${gradeChoice}`);  // Add this line for debugging
+    currentGrade = gradeChoice;
+    document.getElementById('gradeHeader').textContent = `Attendance for Grade ${currentGrade}`;
+    document.getElementById('homePage').style.display = 'none';
+    document.getElementById('attendancePage').style.display = 'block';
+    loadGrade(currentGrade);
+
+    // Set attendance date to the current date
+    const dateInput = document.getElementById('attendanceDate');
+    dateInput.value = new Date().toISOString().split('T')[0];
+    dateInput.dispatchEvent(new Event('input')); // Trigger input validation
+}
+
+
+function backToHome() {
+    document.getElementById('attendancePage').style.display = 'none';
+    document.getElementById('homePage').style.display = 'block';
+
+    // Reset grade choice to default
+    document.getElementById('gradeChoice').value = '';
+}
+
+function loadGrade(grade) {
+    const studentList = document.getElementById('studentList');
+    studentList.innerHTML = ''; // Clear the list
+    const gradeData = attendanceData[grade] || {};
+
+    let index = 1;
+    for (const id in gradeData) {
+        const student = gradeData[id];
+        // Reset status to neutral (empty) for new date
+        student.status = '';
+        addStudentToDOM(index, id, student.name, student.status);
+        index++;
+    }
+}
+
+function addStudent() {
+    let studentName = prompt("Enter the student's name:");
+    if (!studentName || studentName.trim() === '') {
+        alert('Student name cannot be empty.');
+        return;
+    }
+
+    studentName = studentName.trim(); // Remove leading and trailing whitespace
+
+    // Ensure the current grade exists in attendance data
+    attendanceData[currentGrade] = attendanceData[currentGrade] || {};
+
+    // Generate a unique ID for the new student
+    const newStudentId = `student_${Date.now()}`;
+    attendanceData[currentGrade][newStudentId] = {
+        name: studentName,
+        status: '',
+    };
+
+    // Sort students alphabetically
+    attendanceData[currentGrade] = Object.fromEntries(
+        Object.entries(attendanceData[currentGrade]).sort(([, a], [, b]) => a.name.localeCompare(b.name))
+    );
+
+    saveToLocalStorage(attendanceData);
+    loadGrade(currentGrade); // Refresh the UI with the new student
+}
+
+function removeStudent(id) {
+    if (confirm('Are you sure you want to remove this student?')) {
+        if (attendanceData[currentGrade] && attendanceData[currentGrade][id]) {
+            delete attendanceData[currentGrade][id]; // Remove student from data
+            saveToLocalStorage(attendanceData);
+            loadGrade(currentGrade); // Refresh the UI
+        } else {
+            alert('Student not found.');
+        }
+    }
+}
+
+function addStudentToDOM(index, id, name, status) {
+    const studentList = document.getElementById('studentList');
+    const studentDiv = document.createElement('div');
+    studentDiv.className = 'student';
+    studentDiv.dataset.id = id;
+
+    studentDiv.innerHTML = `
+        <span>${index}. ${name}</span>
+        <div class="attendance-buttons">
+            <button class="btn btn-success" onclick="markAttendance('${id}', 'present', this)">Present</button>
+            <button class="btn btn-danger" onclick="markAttendance('${id}', 'absent', this)">Absent</button>
+            <button class="btn btn-warning" onclick="markAttendance('${id}', 'permission', this)">Permission</button>
+            <button class="btn btn-secondary" onclick="removeStudent('${id}')">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+
+    studentList.appendChild(studentDiv);
+
+    // Highlight button if status is already set
+    const buttons = studentDiv.querySelectorAll('.attendance-buttons button');
+    buttons.forEach(button => {
+        if (status && button.textContent.toLowerCase() === status) {
+            button.classList.add('active');
+        }
+    });
+}
+
+function markAttendance(id, status, button) {
+    const attendanceDate = document.getElementById('attendanceDate').value;
+    if (!attendanceDate) {
+        alert('Please select a date.');
+        return;
+    }
+
+    // Ensure the current grade and student data exist
+    attendanceData[currentGrade] = attendanceData[currentGrade] || {};
+    attendanceData[currentGrade][id] = attendanceData[currentGrade][id] || {};
+    attendanceData[currentGrade][id].status = status;
+
+    const studentDiv = button.closest('.student');
+    const buttons = studentDiv.querySelectorAll('.attendance-buttons button');
+
+    // Reset all buttons to default styles
+    buttons.forEach(btn => btn.classList.remove('active'));
+
+    // Apply active style to the selected button
+    button.classList.add('active');
+
+    saveToLocalStorage(attendanceData);
+}
+
+function saveAttendance() {
+    const attendanceDate = document.getElementById('attendanceDate').value;
+    if (!attendanceDate) {
+        alert('Please select a date.');
+        return;
+    }
+    localStorage.setItem(`attendance_${currentGrade}_${attendanceDate}`, JSON.stringify(attendanceData[currentGrade]));
+
+    // Show success notification
+    alert('Attendance saved successfully!');
+}
+
+function searchStudent() {
+    const searchTerm = document.getElementById('searchStudent').value.toLowerCase();
+    const students = document.querySelectorAll('#studentList .student');
+
+    students.forEach(student => {
+        const name = student.textContent.toLowerCase();
+        student.style.display = name.includes(searchTerm) ? '' : 'none';
+    });
+}
+
+function showReviewAttendancePage() {
+    console.log("Review Attendance Page opened");  // Debug line
+    document.getElementById('homePage').style.display = 'none';
+    document.getElementById('attendancePage').style.display = 'none';
+    document.getElementById('reviewAttendancePage').style.display = 'block';
+
+    // Reset grade input
+    document.getElementById('reviewGradeChoice').value = '';
+
+    // Set the date to the current date
+    const dateInput = document.getElementById('reviewAttendanceDate');
+    dateInput.value = new Date().toISOString().split('T')[0];
+    dateInput.dispatchEvent(new Event('input')); // Trigger input validation
+}
+
+
+function loadAttendanceForReview() {
+    const grade = document.getElementById('reviewGradeChoice').value;
+    const date = document.getElementById('reviewAttendanceDate').value;
+
+    if (!grade || !date) {
+        return; // Wait until both grade and date are selected
+    }
+
+    const studentList = document.getElementById('reviewStudentList');
+    studentList.innerHTML = ''; // Clear existing content
+
+    const attendanceKey = `attendance_${grade}_${date}`;
+    const gradeData = JSON.parse(localStorage.getItem(attendanceKey)) || {};
+
+    if (Object.keys(gradeData).length === 0) {
+        studentList.innerHTML = `<p>No attendance data found for Grade ${grade} on ${date}.</p>`;
+        return;
+    }
+
+    let index = 1;
+    for (const id in gradeData) {
+        const student = gradeData[id];
+        addStudentToReviewDOM(index, student.name, student.status);
+        index++;
+    }
+}
+
+function addStudentToReviewDOM(index, name, status) {
+    const studentList = document.getElementById('reviewStudentList');
+    const studentDiv = document.createElement('div');
+    studentDiv.className = 'student';
+
+    studentDiv.innerHTML = `
+        <span>${index}. ${name}</span>
+        <span class="badge ${
+            status === 'present'
+                ? 'bg-success'
+                : status === 'absent'
+                ? 'bg-danger'
+                : 'bg-warning text-dark'
+        }">${status ? status.charAt(0).toUpperCase() + status.slice(1) : 'No Status'}</span>
+    `;
+
+    studentList.appendChild(studentDiv);
+}
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Adjust input behavior for mobile
+    document.getElementById('gradeChoice').addEventListener('change', function () {
+        if (this.value) {
+            changeGrade();
+        }
+    });
+
+    document.getElementById('reviewGradeChoice').addEventListener('change', function () {
+        loadAttendanceForReview();
+    });
+
+    document.getElementById('attendanceDate').addEventListener('input', function () {
+        loadGrade(currentGrade); // Refresh students when date changes
+    });
+
+    document.getElementById('reviewAttendanceDate').addEventListener('input', function () {
+        loadAttendanceForReview();
+    });
+
+    // Ensure touch-friendly interaction
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+        button.addEventListener('pointerup', event => {
+            event.preventDefault(); // Prevent default action for mobile clicks
+            event.target.click(); // Trigger click behavior
+        });
+    });
+});
+// For mobile compatibility (prevents double-click or default behavior)
+buttons.forEach(button => {
+    button.addEventListener('pointerup', function(event) {
+        event.preventDefault();  // Prevents default behavior
+        event.target.click();    // Triggers the click behavior
+    });
+});
+    </script>
+</body>
+</html>
